@@ -1,0 +1,21 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "garmin-connect-prom-exporter"
+version = "0.0.1"
+description = ""
+
+dependencies = [
+    "garth >=0.4.41",
+    "prometheus-client >= 0.19.0",
+]
+
+[project.scripts]
+garmin-connect-prom-exporter-authenticate = "garmin_connect_prom_exporter.auth:authenticate"
+garmin-connect-prom-exporter-refresh = "garmin_connect_prom_exporter.refresh:refresh"
+garmin-connect-prom-exporter-delete = "garmin_connect_prom_exporter.delete:delete"
+
+[project.urls]
+Home = "https://github.com/astromechza/garmin-connect-prom-exporter"
