@@ -12,6 +12,11 @@ dependencies = [
     "prometheus-client >= 0.19.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pylint"
+]
+
 [project.scripts]
 garmin-connect-prom-exporter-authenticate = "garmin_connect_prom_exporter.auth:authenticate"
 garmin-connect-prom-exporter-refresh = "garmin_connect_prom_exporter.refresh:refresh"
