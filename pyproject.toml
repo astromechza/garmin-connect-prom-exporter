@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "garmin-connect-prom-exporter"
 description = "Collect daily metrics from Garmin Connect and push them to Prometheus"
-dynamic = ["version"]
+version = "0.0.1"
 dependencies = [
     "garth >=0.4.41",
     "prometheus-client >= 0.19.0",

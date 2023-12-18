@@ -1,7 +1,5 @@
 import os
 
-__version__ = "0.0.1"
-
 GARMIN_CONNECT_AUTH_DIRECTORY = os.path.expandvars(
     os.environ.get("GARMIN_CONNECT_AUTH_DIRECTORY", "$HOME/.garth"),
 )

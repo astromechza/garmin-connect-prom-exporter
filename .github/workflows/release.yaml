@@ -13,8 +13,9 @@ jobs:
     - name: Find and Replace
       uses: jacobtomlinson/gha-find-replace@v3
       with:
-        find: '__version__ = .+'
-        replace: '__version__ = "${{ github.ref_name }}"'
+        find: 'version = "0.0.1"'
+        replace: 'version = "${{ github.ref_name }}"'
+        include: 'pyproject.toml'
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
