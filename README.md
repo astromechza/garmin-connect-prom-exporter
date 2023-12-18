@@ -25,10 +25,10 @@ The following Python modules can be executed directly - there are no specificall
 
 ## Deploy
 
-It is recommended to deploy this as a Docker image.
+It is recommended to deploy this as a Docker image. The image is currently available through [Github Container Registry](https://github.com/astromechza/garmin-connect-prom-exporter/pkgs/container/garmin-connect-prom-exporter).
 
 ```
-$ docker build -t garmin-connect-prom-exporter .
+$ docker run --rm -ti ghcr.io/astromechza/garmin-connect-prom-exporter:latest
 ```
 
 The command will automatically be `garmin_connect_prom_exporter.refresh` but you can also override this to be `garmin_connect_prom_exporter.delete` or `garmin_connect_prom_exporter.authenticate` if you need to by passing it as a command argument to the container.
