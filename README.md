@@ -1,5 +1,8 @@
 # garmin-connect-prom-exporter
 
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/astromechza/garmin-connect-prom-exporter/ci.yaml)
+![GitHub release (with filter)](https://img.shields.io/github/v/release/astromechza/garmin-connect-prom-exporter)
+
 A Python module and script that authenticates against Garmin Connect to download the last data for yesterday and the 
 latest data for today and then pushes the data to a configured Prometheus Push Gateway. 
 
