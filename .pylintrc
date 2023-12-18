@@ -1,0 +1,5 @@
+[MESSAGES CONTROL]
+disable=missing-module-docstring,too-many-locals
+
+[FORMAT]
+max-line-length=120

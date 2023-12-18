@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 
 import garth
@@ -8,7 +7,11 @@ from . import PROMETHEUS_PUSH_GATEWAY_URL, JOB_NAME
 from .auth import authenticate
 
 
-def refresh():
+def refresh() -> None:
+    """
+    Authenticate with Garmin Connect and then download the latest metric summaryes.
+    Upload these to the prometheus push gateway.
+    """
     authenticate()
 
     registry = CollectorRegistry()
@@ -21,15 +24,18 @@ def refresh():
             print(f"{sample.name} {sample.labels} {sample.value}")
 
     if not PROMETHEUS_PUSH_GATEWAY_URL:
-        raise RuntimeError("'PROMETHEUS_PUSH_GATEWAY_URL' is not set")
+        raise SystemExit("'PROMETHEUS_PUSH_GATEWAY_URL' is not set")
     if not JOB_NAME:
-        raise RuntimeError("'PUSH_JOB_NAME' is not set")
+        raise SystemExit("'PUSH_JOB_NAME' is not set")
 
     push_to_gateway(PROMETHEUS_PUSH_GATEWAY_URL, job=JOB_NAME, registry=registry)
 
 
-def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry):
-    date = (datetime.utcnow() + shift).strftime('%Y-%m-%d')
+def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry) -> None:
+    """
+    Collect data and register gauges for the given metrics batch.
+    """
+    date: str = (datetime.utcnow() + shift).strftime('%Y-%m-%d')
     display_name: str = garth.client.profile['displayName']
     print(f"Collecting data for {name}")
     print("Collecting daily summary")
@@ -37,22 +43,22 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry):
         f"/usersummary-service/usersummary/daily/{display_name}?calendarDate={date}")
 
     prefix = f"garmin_connect_{name}"
-    sharedLabelNames = ['profileId', 'fullName']
-    sharedLabelValues = [garth.client.profile['profileId'], garth.client.profile['fullName']]
+    shared_label_names = ['profileId', 'fullName']
+    shared_label_values = [garth.client.profile['profileId'], garth.client.profile['fullName']]
 
-    (Gauge(f"{prefix}_steps_total", 'Total number of steps for the last day', sharedLabelNames, registry=registry)
-     .labels(*sharedLabelValues).set(daily_summary.get('totalSteps', 0)))
-    (Gauge(f"{prefix}_floors_ascended_meters_total", 'Total meters ascended last day', sharedLabelNames,
+    (Gauge(f"{prefix}_steps_total", 'Total number of steps for the last day', shared_label_names, registry=registry)
+     .labels(*shared_label_values).set(daily_summary.get('totalSteps', 0)))
+    (Gauge(f"{prefix}_floors_ascended_meters_total", 'Total meters ascended last day', shared_label_names,
            registry=registry)
-     .labels(*sharedLabelValues)
+     .labels(*shared_label_values)
      .set(daily_summary.get('floorsAscendedInMeters', 0)))
-    (Gauge(f"{prefix}_floors_descended_meters_total", 'Total meters descended for the last day', sharedLabelNames,
+    (Gauge(f"{prefix}_floors_descended_meters_total", 'Total meters descended for the last day', shared_label_names,
            registry=registry)
-     .labels(*sharedLabelValues)
+     .labels(*shared_label_values)
      .set(daily_summary.get('floorsDescendedInMeters', 0)))
 
     stress_seconds_gauge = Gauge(f"{prefix}_stress_seconds_total", 'Total stress seconds by category',
-                                 ['category'] + sharedLabelNames, registry=registry)
+                                 ['category'] + shared_label_names, registry=registry)
     stress_seconds_by_category = {
         'low': daily_summary.get('lowStressDuration', 0),
         'medium': daily_summary.get('mediumStressDuration', 0),
@@ -61,10 +67,10 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry):
         'uncategorized': daily_summary.get('uncategorizedStressDuration', 0),
     }
     for category, value in stress_seconds_by_category.items():
-        stress_seconds_gauge.labels(category, *sharedLabelValues).set(value)
+        stress_seconds_gauge.labels(category, *shared_label_values).set(value)
 
     activity_seconds_gauge = Gauge(f"{prefix}_activity_seconds_total", 'Total activity seconds by category',
-                                   ['category'] + sharedLabelNames, registry=registry)
+                                   ['category'] + shared_label_names, registry=registry)
     active_seconds_by_category = {
         'sleeping': daily_summary.get('sleepingSeconds', 0),
         'sedentary': daily_summary.get('sedentarySeconds', 0),
@@ -72,14 +78,14 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry):
         'highlyActive': daily_summary.get('highlyActiveSeconds', 0),
     }
     for category, value in active_seconds_by_category.items():
-        activity_seconds_gauge.labels(category, *sharedLabelValues).set(value)
+        activity_seconds_gauge.labels(category, *shared_label_values).set(value)
 
     print("Collecting sleep data")
     sleep_summary = \
     garth.client.connectapi(f"/wellness-service/wellness/dailySleepData/{display_name}?date={date}")[
         'dailySleepDTO']
     sleep_seconds_gauge = Gauge(f"{prefix}_sleep_seconds_total", 'Total sleeping seconds by category',
-                                ['category'] + sharedLabelNames, registry=registry)
+                                ['category'] + shared_label_names, registry=registry)
     sleep_seconds_by_category = {
         'deep': sleep_summary.get('deepSleepSeconds', 0),
         'light': sleep_summary.get('lightSleepSeconds', 0),
@@ -88,8 +94,4 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry):
         'unmeasurable': sleep_summary.get('unmeasurableSleepSeconds', 0),
     }
     for category, value in sleep_seconds_by_category.items():
-        sleep_seconds_gauge.labels(category, *sharedLabelValues).set(value)
-
-
-if __name__ == '__main__':
-    refresh()
+        sleep_seconds_gauge.labels(category, *shared_label_values).set(value)
