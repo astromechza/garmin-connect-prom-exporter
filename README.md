@@ -3,13 +3,15 @@
 A Python module and script that authenticates against Garmin Connect to download the last data for yesterday and the 
 latest data for today and then pushes the data to a configured Prometheus Push Gateway. 
 
-This is designed to be run as a cronjob.
+This is designed to be run as a cronjob (which is why this uses a push gateway).
 
-## Scripts
+## Entrypoints
 
-- `garmin-connect-prom-exporter-authenticate` - just authenticate against Garmin Connect and then exit. This can be used to check or debug authentication or when used with a persistent volume, to store MFA tokens.
-- `garmin-connect-prom-exporter-refresh` - refresh and push data to Prometheus push gateway.
-- `garmin-connect-prom-exporter-delete` - delete the pushed metrics from the pushed gateway by unique `PUSH_JOB_NAME`.
+The following Python modules can be executed directly - there are no specifically installed scripts or binaries. 
+
+- `garmin_connect_prom_exporter.authenticate` - just authenticate against Garmin Connect and then exit. This can be used to check or debug authentication or when used with a persistent volume, to store MFA tokens.
+- `garmin_connect_prom_exporter.refresh` - refresh and push data to Prometheus push gateway.
+- `garmin_connect_prom_exporter.delete` - delete the pushed metrics from the pushed gateway by unique `PUSH_JOB_NAME`.
 
 ## Environment variables:
 
@@ -29,7 +31,7 @@ It is recommended to deploy this as a Docker image.
 $ docker build -t garmin-connect-prom-exporter .
 ```
 
-The entrypoint will automatically be /usr/local/bin/garmin-connect-prom-exporter-refresh but you can also override this to be `-delete` or `-authenticate` if you need to.
+The command will automatically be `garmin_connect_prom_exporter.refresh` but you can also override this to be `garmin_connect_prom_exporter.delete` or `garmin_connect_prom_exporter.authenticate` if you need to by passing it as a command argument to the container.
 
 Remember, if you are running this in Kubernetes, take advantage of secrets to secure your password and email variables.
 

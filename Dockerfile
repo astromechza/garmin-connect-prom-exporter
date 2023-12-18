@@ -16,4 +16,5 @@ COPY ./pyproject.toml ./
 COPY ./garmin_connect_prom_exporter ./garmin_connect_prom_exporter
 RUN flit install
 
-ENTRYPOINT ["/usr/local/bin/garmin-connect-prom-exporter-refresh"]
+ENTRYPOINT ["/usr/local/bin/python", "-m"]
+CMD ["garmin_connect_prom_exporter.refresh"]
