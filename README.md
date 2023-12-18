@@ -21,6 +21,18 @@ This is designed to be run as a cronjob.
 | PROMETHEUS_PUSH_GATEWAY_URL   | The push gateway url to send metrics to                      | http://localhost:9091        |
 | PUSH_JOB_NAME                 | (Optional) Push job name for persisting and clearing metrics | garmin_connect_prom_exporter |
 
+## Deploy
+
+It is recommended to deploy this as a Docker image.
+
+```
+$ docker build -t garmin-connect-prom-exporter .
+```
+
+The entrypoint will automatically be /usr/local/bin/garmin-connect-prom-exporter-refresh but you can also override this to be `-delete` or `-authenticate` if you need to.
+
+Remember, if you are running this in Kubernetes, take advantage of secrets to secure your password and email variables.
+
 ## Sample logs and output
 
 ```
