@@ -95,3 +95,7 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry) -> N
     }
     for category, value in sleep_seconds_by_category.items():
         sleep_seconds_gauge.labels(category, *shared_label_values).set(value)
+
+
+if __name__ == "__main__":
+    refresh()

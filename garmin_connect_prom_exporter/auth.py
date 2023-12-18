@@ -36,3 +36,7 @@ def authenticate() -> None:
     garth.login(GARMIN_CONNECT_AUTH_EMAIL, GARMIN_CONNECT_AUTH_PASSWORD)
     garth.save(GARMIN_CONNECT_AUTH_DIRECTORY)
     print(f"Authentication successful {garth.client.username}")
+
+
+if __name__ == "__main__":
+    authenticate()

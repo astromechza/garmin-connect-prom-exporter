@@ -9,7 +9,7 @@ This is designed to be run as a cronjob.
 
 - `garmin-connect-prom-exporter-authenticate` - just authenticate against Garmin Connect and then exit. This can be used to check or debug authentication or when used with a persistent volume, to store MFA tokens.
 - `garmin-connect-prom-exporter-refresh` - refresh and push data to Prometheus push gateway.
-- `garmin-connect-prom-exporter-delete` - 
+- `garmin-connect-prom-exporter-delete` - delete the pushed metrics from the pushed gateway by unique `PUSH_JOB_NAME`.
 
 ## Environment variables:
 
