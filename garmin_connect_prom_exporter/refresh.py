@@ -46,25 +46,33 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry) -> N
     shared_label_names = ['profileId', 'fullName']
     shared_label_values = [garth.client.profile['profileId'], garth.client.profile['fullName']]
 
+    stamp = daily_summary.get('wellnessEndTimeGmt')
+    if stamp:
+        try:
+            (Gauge(f"{prefix}_updated_at", 'Last update time for this report', shared_label_names, registry=registry)
+             .labels(*shared_label_values).set(datetime.strptime(stamp, "%Y-%m-%dT%H:%M:%S.%f").timestamp()))
+        except ValueError:
+            pass
+
     (Gauge(f"{prefix}_steps_total", 'Total number of steps for the last day', shared_label_names, registry=registry)
-     .labels(*shared_label_values).set(daily_summary.get('totalSteps', 0)))
+     .labels(*shared_label_values).set(daily_summary.get('totalSteps') or 0))
     (Gauge(f"{prefix}_floors_ascended_meters_total", 'Total meters ascended last day', shared_label_names,
            registry=registry)
      .labels(*shared_label_values)
-     .set(daily_summary.get('floorsAscendedInMeters', 0)))
+     .set(daily_summary.get('floorsAscendedInMeters') or 0))
     (Gauge(f"{prefix}_floors_descended_meters_total", 'Total meters descended for the last day', shared_label_names,
            registry=registry)
      .labels(*shared_label_values)
-     .set(daily_summary.get('floorsDescendedInMeters', 0)))
+     .set(daily_summary.get('floorsDescendedInMeters') or 0))
 
     stress_seconds_gauge = Gauge(f"{prefix}_stress_seconds_total", 'Total stress seconds by category',
                                  ['category'] + shared_label_names, registry=registry)
     stress_seconds_by_category = {
-        'low': daily_summary.get('lowStressDuration', 0),
-        'medium': daily_summary.get('mediumStressDuration', 0),
-        'high': daily_summary.get('highStressDuration', 0),
-        'rest': daily_summary.get('restStressDuration', 0),
-        'uncategorized': daily_summary.get('uncategorizedStressDuration', 0),
+        'low': daily_summary.get('lowStressDuration') or 0,
+        'medium': daily_summary.get('mediumStressDuration') or 0,
+        'high': daily_summary.get('highStressDuration') or 0,
+        'rest': daily_summary.get('restStressDuration') or 0,
+        'uncategorized': daily_summary.get('uncategorizedStressDuration') or 0,
     }
     for category, value in stress_seconds_by_category.items():
         stress_seconds_gauge.labels(category, *shared_label_values).set(value)
@@ -72,10 +80,10 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry) -> N
     activity_seconds_gauge = Gauge(f"{prefix}_activity_seconds_total", 'Total activity seconds by category',
                                    ['category'] + shared_label_names, registry=registry)
     active_seconds_by_category = {
-        'sleeping': daily_summary.get('sleepingSeconds', 0),
-        'sedentary': daily_summary.get('sedentarySeconds', 0),
-        'active': daily_summary.get('activeSeconds', 0),
-        'highlyActive': daily_summary.get('highlyActiveSeconds', 0),
+        'sleeping': daily_summary.get('sleepingSeconds') or 0,
+        'sedentary': daily_summary.get('sedentarySeconds') or 0,
+        'active': daily_summary.get('activeSeconds') or 0,
+        'highlyActive': daily_summary.get('highlyActiveSeconds') or 0,
     }
     for category, value in active_seconds_by_category.items():
         activity_seconds_gauge.labels(category, *shared_label_values).set(value)
@@ -87,11 +95,11 @@ def create_gauges(name: str, shift: timedelta, registry: CollectorRegistry) -> N
     sleep_seconds_gauge = Gauge(f"{prefix}_sleep_seconds_total", 'Total sleeping seconds by category',
                                 ['category'] + shared_label_names, registry=registry)
     sleep_seconds_by_category = {
-        'deep': sleep_summary.get('deepSleepSeconds', 0),
-        'light': sleep_summary.get('lightSleepSeconds', 0),
-        'rem': sleep_summary.get('remSleepSeconds', 0),
-        'awake': sleep_summary.get('awakeSleepSeconds', 0),
-        'unmeasurable': sleep_summary.get('unmeasurableSleepSeconds', 0),
+        'deep': sleep_summary.get('deepSleepSeconds') or 0,
+        'light': sleep_summary.get('lightSleepSeconds') or 0,
+        'rem': sleep_summary.get('remSleepSeconds') or 0,
+        'awake': sleep_summary.get('awakeSleepSeconds') or 0,
+        'unmeasurable': sleep_summary.get('unmeasurableSleepSeconds') or 0,
     }
     for category, value in sleep_seconds_by_category.items():
         sleep_seconds_gauge.labels(category, *shared_label_values).set(value)
