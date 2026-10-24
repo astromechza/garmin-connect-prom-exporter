@@ -7,7 +7,9 @@ name = "garmin-connect-prom-exporter"
 description = "Collect daily metrics from Garmin Connect and push them to Prometheus"
 version = "0.0.1"
 dependencies = [
-    "garth >=0.4.41",
+    # CVE-2026-111943: 2026.10.19 drops the distrusted eMudhra emSign roots.
+    "certifi >=2026.10.19",
+    "garth ==0.6.3",
     "prometheus-client >= 0.19.0",
 ]
 
